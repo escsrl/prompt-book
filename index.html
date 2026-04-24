@@ -842,99 +842,95 @@
 </footer>
 
 <script>
-    // 1. CONFIGURAZIONE URL E LINK
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygfQO61DOBjJAf6ZWo9To8uAWn9VlAasW0_blMdisDUlmBBLeCXe4GveqLSgllv3tj/exec";
+  // 1. CONFIGURAZIONE URL E LINK
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygfQO61DOBjJAf6ZWo9To8uAWn9VlAasW0_blMdisDUlmBBLeCXe4GveqLSgllv3tj/exec";
 
-    const DOWNLOAD_LINKS = {
-        windows: "https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_x64-setup.exe",
-        macos: "https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_universal.dmg",
-        linux: "https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_amd64.deb",
-        fallback: "#download"
+  const DOWNLOAD_LINKS = {
+    windows: "https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_x64-setup.exe",
+    macos: "https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_universal.dmg",
+    linux: "https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_amd64.deb",
+    fallback: "#download"
+  };
+
+  // 2. FUNZIONE INVIO FORM A GOOGLE SHEETS
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const submitButton = form.querySelector('.form-submit');
+    const originalText = submitButton.innerText;
+
+    // Feedback visivo: disabilita il tasto durante l'invio
+    submitButton.disabled = true;
+    submitButton.innerText = "Invio in corso...";
+
+    try {
+      // Invio dei dati allo script di Google
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: new FormData(form),
+        mode: 'no-cors'
+      });
+
+      // Se arriviamo qui, consideriamo l'invio riuscito
+      alert("Grazie! I tuoi dati sono stati salvati. Il download partirà automaticamente.");
+      form.reset();
+
+      // 3. LOGICA DOWNLOAD AUTOMATICO DOPO INVIO
+      const os = detectOS();
+      if (os !== "fallback") {
+        window.location.href = DOWNLOAD_LINKS[os];
+      } else {
+        window.location.href = "#download";
+      }
+
+    } catch (error) {
+      console.error('Errore invio:', error);
+      alert("Si è verificato un errore durante l'invio. Prova a scaricare direttamente dai link sopra.");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerText = originalText;
+    }
+  }
+
+  // 4. RILEVAMENTO SISTEMA OPERATIVO
+  function detectOS() {
+    const platform = window.navigator.platform.toLowerCase();
+    const userAgent = window.navigator.userAgent.toLowerCase();
+
+    if (platform.includes("win") || userAgent.includes("windows")) return "windows";
+    if (platform.includes("mac") || userAgent.includes("macintosh")) return "macos";
+    if (platform.includes("linux")) return "linux";
+
+    return "fallback";
+  }
+
+  // 5. SETUP PULSANTI ALL'AVVIO
+  function setupDownloadButtons() {
+    const os = detectOS();
+    const mainBtn = document.getElementById("main-download-btn");
+
+    const osNames = {
+      windows: "Windows",
+      macos: "MacOS",
+      linux: "Linux"
     };
 
-    // 2. FUNZIONE INVIO FORM A GOOGLE SHEETS
-    async function handleSubmit(e) {
-        e.preventDefault();
+    if (os !== "fallback") {
+      if (mainBtn) {
+        mainBtn.innerHTML = `↓ Scarica per ${osNames[os]}`;
+      }
 
-        const form = e.target;
-        const submitButton = form.querySelector('.form-submit');
-        const originalText = submitButton.innerText;
-
-        // Feedback visivo: disabilita il tasto durante l'invio
-        submitButton.disabled = true;
-        submitButton.innerText = "Invio in corso...";
-
-        try {
-            // Invio dei dati allo script di Google
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: new FormData(form),
-                mode: 'no-cors'
-            });
-
-            // Se arriviamo qui, consideriamo l'invio riuscito
-            alert("Grazie! I tuoi dati sono stati salvati. Il download partirà automaticamente.");
-            form.reset();
-
-            // 3. LOGICA DOWNLOAD AUTOMATICO DOPO INVIO
-            const os = detectOS();
-            if (os !== "fallback") {
-                window.location.href = DOWNLOAD_LINKS[os];
-            } else {
-                window.location.href = "#download";
-            }
-
-        } catch (error) {
-            console.error('Errore invio:', error);
-            alert("Si è verificato un errore durante l'invio. Prova a scaricare direttamente dai link sopra.");
-        } finally {
-            submitButton.disabled = false;
-            submitButton.innerText = originalText;
-        }
+      const activeOsSpan = document.getElementById(`os-${os}`);
+      if (activeOsSpan) {
+        activeOsSpan.style.color = "var(--accent-dark)";
+        activeOsSpan.style.fontWeight = "600";
+        activeOsSpan.style.textDecoration = "underline";
+      }
     }
+  }
 
-    // 4. RILEVAMENTO SISTEMA OPERATIVO
-    function detectOS() {
-        const platform = window.navigator.platform.toLowerCase();
-        const userAgent = window.navigator.userAgent.toLowerCase();
-
-        if (platform.includes("win") || userAgent.includes("windows")) return "windows";
-        if (platform.includes("mac") || userAgent.includes("macintosh")) return "macos";
-        if (platform.includes("linux")) return "linux";
-
-        return "fallback";
-    }
-
-    // 5. SETUP PULSANTI ALL'AVVIO
-    function setupDownloadButtons() {
-        const os = detectOS();
-        const mainBtn = document.getElementById("main-download-btn");
-
-        // Rimosso navBtn per far scorrere la pagina al form invece di scaricare direttamente
-
-        const osNames = {
-            windows: "Windows",
-            macos: "MacOS",
-            linux: "Linux"
-        };
-
-        if (os !== "fallback") {
-            const link = DOWNLOAD_LINKS[os];
-            if (mainBtn) {
-                mainBtn.href = link;
-                mainBtn.innerHTML = `↓ Scarica per ${osNames[os]}`;
-            }
-
-            const activeOsSpan = document.getElementById(`os-${os}`);
-            if (activeOsSpan) {
-                activeOsSpan.style.color = "var(--accent-dark)";
-                activeOsSpan.style.fontWeight = "600";
-                activeOsSpan.style.textDecoration = "underline";
-            }
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", setupDownloadButtons);
+  document.addEventListener("DOMContentLoaded", setupDownloadButtons);
 </script>
 </body>
 </html>
