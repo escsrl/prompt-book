@@ -782,19 +782,18 @@
   <section class="form-section">
     <h2>Scarica e provalo</h2>
     <p class="form-lead">
-      Lascia i tuo dati compilando almeno il Nome per sbloccare il download. 
-      Ti contatteremo solo per Prompt Book — nessuna newsletter,
-      nessuna promozione, parola.
+      Lascia i tuoi dati compilando almeno il Nome per sbloccare il download.
+      Ti contatteremo solo per Prompt Book — nessuna newsletter, nessuna promozione, parola.
     </p>
 
     <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
-      <a href="https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_x64-setup.exe" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
+      <a href="https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_x64-setup.exe" onclick="handleOSClick(event)" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
         Windows (.exe)
       </a>
-      <a href="https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_universal.dmg" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
+      <a href="https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_universal.dmg" onclick="handleOSClick(event)" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
         macOS (.dmg)
       </a>
-      <a href="https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_amd64.deb" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
+      <a href="https://github.com/escsrl/prompt-book/releases/download/v1.02/Prompt-Book_1.0.2_amd64.deb" onclick="handleOSClick(event)" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
         Linux (.deb)
       </a>
     </div>
@@ -862,49 +861,86 @@
     fallback: "#download"
   };
 
-  // 2. FUNZIONE INVIO FORM A GOOGLE SHEETS
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    const form = e.target;
-    const submitButton = form.querySelector('.form-submit');
-    const originalText = submitButton.innerText;
-
-    // Feedback visivo: disabilita il tasto durante l'invio
-    submitButton.disabled = true;
-    submitButton.innerText = "Invio in corso...";
+  // 2. FUNZIONE PER L'INVIO GENERICO DEI DATI (Riutilizzabile)
+  async function sendFormData() {
+    const form = document.getElementById('testerForm');
+    if (!form.reportValidity()) return false;
 
     try {
-      // Invio dei dati allo script di Google
       await fetch(SCRIPT_URL, {
         method: 'POST',
         body: new FormData(form),
         mode: 'no-cors'
       });
+      return true;
+    } catch (error) {
+      console.error('Errore invio:', error);
+      return false;
+    }
+  }
 
-      // Se arriviamo qui, consideriamo l'invio riuscito
+  // 3. INVIO FORM A GOOGLE SHEETS (Click su bottone principale form)
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const submitButton = document.getElementById('submit-btn');
+    const originalText = submitButton.innerText;
+
+    submitButton.disabled = true;
+    submitButton.innerText = "Invio in corso...";
+
+    const isSuccess = await sendFormData();
+
+    if (isSuccess) {
       alert("Grazie! I tuoi dati sono stati salvati. Il download partirà automaticamente.");
       form.reset();
-      updateLockStatus(); // Riblocca i tasti dopo il reset del form
+      updateLockStatus();
 
-      // 3. LOGICA DOWNLOAD AUTOMATICO DOPO INVIO
       const os = detectOS();
       if (os !== "fallback") {
         window.location.href = DOWNLOAD_LINKS[os];
       } else {
         window.location.href = "#download";
       }
-
-    } catch (error) {
-      console.error('Errore invio:', error);
+    } else {
       alert("Si è verificato un errore durante l'invio. Prova a scaricare direttamente dai link sopra.");
-    } finally {
-      submitButton.disabled = false;
-      submitButton.innerText = originalText;
     }
+
+    submitButton.disabled = false;
+    submitButton.innerText = originalText;
   }
 
-  // 4. RILEVAMENTO SISTEMA OPERATIVO
+  // 4. INVIO FORM TRAMITE CLICK SUI TASTI OS SPECIFICI (nella sezione Download)
+  async function handleOSClick(e) {
+    e.preventDefault();
+
+    const btn = e.currentTarget;
+    if (btn.classList.contains('locked-btn')) return;
+
+    const downloadUrl = btn.href;
+    const originalText = btn.innerText;
+
+    btn.innerText = "Invio in corso...";
+    btn.classList.add('locked-btn');
+
+    const isSuccess = await sendFormData();
+
+    if (isSuccess) {
+      alert("Grazie! I tuoi dati sono stati salvati. Il download partirà automaticamente.");
+      document.getElementById('testerForm').reset();
+      updateLockStatus();
+    } else {
+      alert("Si è verificato un errore durante l'invio. Il download partirà comunque.");
+    }
+
+    window.location.href = downloadUrl;
+
+    btn.innerText = originalText;
+    btn.classList.remove('locked-btn');
+  }
+
+  // 5. RILEVAMENTO SISTEMA OPERATIVO
   function detectOS() {
     const platform = window.navigator.platform.toLowerCase();
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -916,7 +952,7 @@
     return "fallback";
   }
 
-  // Funzione per la gestione del blocco/sblocco dei tasti in base all'input
+  // 6. BLOCCO/SBLOCCO TASTI IN BASE ALL'INPUT
   function updateLockStatus() {
     const nomeInput = document.getElementById('nome');
     const allButtons = document.querySelectorAll('.os-btn, #submit-btn');
@@ -933,15 +969,26 @@
     });
   }
 
-  // 5. SETUP PULSANTI ALL'AVVIO
+  // 7. SETUP PULSANTI ALL'AVVIO
   function setupDownloadButtons() {
     const os = detectOS();
-    
-    // Ora i pulsanti della topbar/hero punteranno tutti di base all'ancora #download 
-    // e abbiamo rimosso la sostituzione JS degli href per forzare l'utente a passare al form.
 
+    // Nomi per visualizzazione bottoni top
+    const osNames = {
+      windows: "Windows",
+      macos: "MacOS",
+      linux: "Linux"
+    };
+
+    // NOTA: Il bottone in cima e nella navbar hanno già href="#download" nell'HTML
+    // Li aggiorniamo solo graficamente, mantenendo il puntamento al form
     if (os !== "fallback") {
-      // Sottolinea solo l'OS corrente nella metadata hero
+      const mainBtn = document.getElementById("main-download-btn");
+      if (mainBtn) {
+        // Aggiorna il testo ma il click porta sempre al form
+        mainBtn.innerHTML = `↓ Scarica per ${osNames[os]}`;
+      }
+
       const activeOsSpan = document.getElementById(`os-${os}`);
       if (activeOsSpan) {
         activeOsSpan.style.color = "var(--accent-dark)";
@@ -950,11 +997,10 @@
       }
     }
 
-    // Configura il listener per sbloccare i pulsanti all'inserimento del nome
     const nomeInput = document.getElementById('nome');
     if(nomeInput) {
       nomeInput.addEventListener('input', updateLockStatus);
-      updateLockStatus(); // Esegui subito per stato iniziale corretto
+      updateLockStatus();
     }
   }
 
