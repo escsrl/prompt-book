@@ -469,6 +469,15 @@
       margin-left: auto;
       margin-right: auto;
     }
+
+    /* --- CLASSE PER I PULSANTI BLOCCATI --- */
+    .locked-btn {
+      opacity: 0.4;
+      pointer-events: none;
+      cursor: not-allowed;
+      filter: grayscale(100%);
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -516,7 +525,7 @@
       margin-top: 10px;
       transition: all 0.15s;
     }
-    .form-submit:hover { background: #c99a3f; transform: translateY(-1px); }
+    .form-submit:not(:disabled):hover { background: #c99a3f; transform: translateY(-1px); }
     .form-note {
       font-size: 12px;
       color: var(--paper-warm);
@@ -773,26 +782,26 @@
   <section class="form-section">
     <h2>Scarica e provalo</h2>
     <p class="form-lead">
-      Lascia i tuoi dati per ricevere il link di download e gli aggiornamenti
-      sulla beta. Ti contatteremo solo per Prompt Book — nessuna newsletter,
+      Lascia i tuo dati compilando almeno il Nome per sbloccare il download. 
+      Ti contatteremo solo per Prompt Book — nessuna newsletter,
       nessuna promozione, parola.
     </p>
 
     <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
-      <a href="https://github.com/ESC/prompt-book/releases/download/v1.0.2/Prompt-Book_1.0.2_x64_en-US.exe" class="btn-secondary" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
+      <a href="https://github.com/ESC/prompt-book/releases/download/v1.0.2/Prompt-Book_1.0.2_x64_en-US.exe" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
         Windows (.exe)
       </a>
-      <a href="https://github.com/ESC/prompt-book/releases/download/v1.0.2/Prompt-Book_1.0.2_universal.dmg" class="btn-secondary" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
+      <a href="https://github.com/ESC/prompt-book/releases/download/v1.0.2/Prompt-Book_1.0.2_universal.dmg" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
         macOS (.dmg)
       </a>
-      <a href="https://github.com/ESC/prompt-book/releases/download/v1.0.2/prompt-book_1.0.2_amd64.deb" class="btn-secondary" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
+      <a href="https://github.com/ESC/prompt-book/releases/download/v1.0.2/prompt-book_1.0.2_amd64.deb" class="btn-secondary os-btn locked-btn" style="color: var(--paper); border-color: rgba(247,243,234,0.3);">
         Linux (.deb)
       </a>
     </div>
 
     <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
       <div style="flex: 1; height: 1px; background: rgba(247,243,234,0.1);"></div>
-      <span style="color: var(--paper-warm); font-size: 14px; font-style: italic;">oppure compila per scaricare e iscriverti agli aggiornamenti</span>
+      <span style="color: var(--paper-warm); font-size: 14px; font-style: italic;">compila qui sotto per sbloccare i tasti</span>
       <div style="flex: 1; height: 1px; background: rgba(247,243,234,0.1);"></div>
     </div>
 
@@ -815,7 +824,7 @@
           <textarea id="usi" name="usi" placeholder="Es. Claude per scrittura, ChatGPT per coding, Gemini per ricerche..."></textarea>
         </div>
       </div>
-      <button type="submit" class="form-submit">Voglio provarlo →</button>
+      <button type="submit" class="form-submit locked-btn" id="submit-btn" disabled>Voglio provarlo →</button>
       <p class="form-note">
         I tuoi dati saranno usati esclusivamente per inviarti l'accesso a
         Prompt Book. Niente spam, niente cessione a terzi.
@@ -876,6 +885,7 @@
       // Se arriviamo qui, consideriamo l'invio riuscito
       alert("Grazie! I tuoi dati sono stati salvati. Il download partirà automaticamente.");
       form.reset();
+      updateLockStatus(); // Riblocca i tasti dopo il reset del form
 
       // 3. LOGICA DOWNLOAD AUTOMATICO DOPO INVIO
       const os = detectOS();
@@ -906,32 +916,45 @@
     return "fallback";
   }
 
+  // Funzione per la gestione del blocco/sblocco dei tasti in base all'input
+  function updateLockStatus() {
+    const nomeInput = document.getElementById('nome');
+    const allButtons = document.querySelectorAll('.os-btn, #submit-btn');
+    const hasName = nomeInput.value.trim().length > 0;
+
+    allButtons.forEach(btn => {
+      if (hasName) {
+        btn.classList.remove('locked-btn');
+        if(btn.tagName === 'BUTTON') btn.disabled = false;
+      } else {
+        btn.classList.add('locked-btn');
+        if(btn.tagName === 'BUTTON') btn.disabled = true;
+      }
+    });
+  }
+
   // 5. SETUP PULSANTI ALL'AVVIO
   function setupDownloadButtons() {
     const os = detectOS();
-    const mainBtn = document.getElementById("main-download-btn");
-    const navBtn = document.getElementById("nav-download-btn");
-
-    const osNames = {
-      windows: "Windows",
-      macos: "MacOS",
-      linux: "Linux"
-    };
+    
+    // Ora i pulsanti della topbar/hero punteranno tutti di base all'ancora #download 
+    // e abbiamo rimosso la sostituzione JS degli href per forzare l'utente a passare al form.
 
     if (os !== "fallback") {
-      const link = DOWNLOAD_LINKS[os];
-      if (mainBtn) {
-        mainBtn.href = link;
-        mainBtn.innerHTML = `↓ Scarica per ${osNames[os]}`;
-      }
-      if (navBtn) navBtn.href = link;
-
+      // Sottolinea solo l'OS corrente nella metadata hero
       const activeOsSpan = document.getElementById(`os-${os}`);
       if (activeOsSpan) {
         activeOsSpan.style.color = "var(--accent-dark)";
         activeOsSpan.style.fontWeight = "600";
         activeOsSpan.style.textDecoration = "underline";
       }
+    }
+
+    // Configura il listener per sbloccare i pulsanti all'inserimento del nome
+    const nomeInput = document.getElementById('nome');
+    if(nomeInput) {
+      nomeInput.addEventListener('input', updateLockStatus);
+      updateLockStatus(); // Esegui subito per stato iniziale corretto
     }
   }
 
