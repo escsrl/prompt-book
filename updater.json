@@ -1,1 +1,23 @@
-
+{
+  "version": "1.2.1",
+  "notes": "Changelog della versione 1.2.1:\n- Aggiunta Guida PDF",
+  "pub_date": "2026-04-28T17:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "INCOLLA_LA_FIRMA_DEL_FILE_NSIS.ZIP.SIG",
+      "url": "https://github.com/escsrl/prompt-book/releases/download/v1.2.0/Prompt-Book_1.2.0_x64-setup.nsis.zip"
+    },
+    "darwin-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRbjkxbjB3RFBnbXNpbFlxQnpHWm9Jb1VFZzl3VUlSNUVSeFFmZUZsOEVwdkFzM2YzNkpyQkN5M2RKNXJpaXdQbEhMcStwcmd2bXB6U08welRHOEhiWnJObCt4UGg4cEFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MzcxOTc3CWZpbGU6UHJvbXB0LUJvb2suYXBwLnRhci5negpPNkViY1VxcGNFU0NrNFpsRjY5bzVMbG1kWlVmM054K3F5blhTd0RkSW9Wem1VaTZPVEtqd2FBY3VLQmQySGpPWjhIdUtIbnBWekpoRVlVRHZHa0ZDZz09Cg==",
+      "url": "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book.app.tar.gz"
+    },
+    "darwin-aarch64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRbjkxbjB3RFBnbXNpbFlxQnpHWm9Jb1VFZzl3VUlSNUVSeFFmZUZsOEVwdkFzM2YzNkpyQkN5M2RKNXJpaXdQbEhMcStwcmd2bXB6U08welRHOEhiWnJObCt4UGg4cEFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MzcxOTc3CWZpbGU6UHJvbXB0LUJvb2suYXBwLnRhci5negpPNkViY1VxcGNFU0NrNFpsRjY5bzVMbG1kWlVmM054K3F5blhTd0RkSW9Wem1VaTZPVEtqd2FBY3VLQmQySGpPWjhIdUtIbnBWekpoRVlVRHZHa0ZDZz09Cg==",
+      "url": "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book.app.tar.gz"
+    },
+    "linux-x86_64": {
+      "signature": "INCOLLA_LA_FIRMA_DEL_FILE_APPIMAGE.TAR.GZ.SIG",
+      "url": "https://github.com/escsrl/prompt-book/releases/download/v1.2.0/prompt-book_1.2.0_amd64.AppImage.tar.gz"
+    }
+  }
+}
