@@ -2,1349 +2,342 @@
 <html lang="it">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Prompt Book — uno strumento gratuito per scrivere prompt AI strutturati, organizzarli, riutilizzarli e arricchirli con l'esperienza. Per Claude, ChatGPT, Gemini e altri assistenti AI.">
-  <title>Prompt Book — scrivi prompt migliori, senza fatica</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
-    :root {
-      --ink: #1a1814;
-      --ink-soft: #3a3530;
-      --ink-muted: #6b6558;
-      --paper: #f7f3ea;
-      --paper-warm: #efe9dc;
-      --paper-darker: #e6dfcd;
-      --line: #d9d1bc;
-      --accent: #6b7a3b;
-      --accent-dark: #4a5628;
-      --brass: #b08936;
-      --font-serif: 'Fraunces', Georgia, serif;
-      --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: var(--font-sans), sans-serif;
-      color: var(--ink);
-      background: var(--paper);
-      line-height: 1.6;
-      font-size: 16px;
-      background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(107, 101, 88, 0.012) 2px, rgba(107, 101, 88, 0.012) 3px);
-    }
-
-    /* ================ NAVIGATION ================ */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(247, 243, 234, 0.92);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--line);
-      padding: 14px 0;
-    }
-
-    .nav-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--ink);
-    }
-
-    .nav-logo {
-      width: 42px;
-      height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .nav-logo svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .nav-title {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 600;
-      font-size: 19px;
-      letter-spacing: -0.015em;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      list-style: none;
-      align-items: center;
-    }
-
-    .nav-links a {
-      color: var(--ink-soft);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.15s;
-    }
-
-    .nav-links a:hover {
-      color: var(--ink);
-    }
-
-    .nav-cta {
-      background: var(--ink);
-      color: var(--paper) !important;
-      padding: 8px 18px;
-      border-radius: 3px;
-      font-weight: 500;
-      transition: background 0.15s;
-    }
-
-    .nav-cta:hover {
-      background: var(--ink-soft);
-    }
-
-    /* ================ HERO ================ */
-    .hero {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 100px 32px 80px;
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .hero-content h1 {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 56px;
-      line-height: 1.05;
-      letter-spacing: -0.025em;
-      margin-bottom: 22px;
-      font-variation-settings: 'opsz' 144;
-      color: var(--ink);
-    }
-
-    .hero-content h1 em {
-      font-style: italic;
-      color: var(--accent-dark);
-      font-weight: 500;
-    }
-
-    .hero-tagline {
-      font-family: var(--font-serif), sans-serif;
-      font-style: italic;
-      font-size: 21px;
-      line-height: 1.45;
-      color: var(--ink-soft);
-      margin-bottom: 36px;
-      max-width: 50ch;
-      font-variation-settings: 'opsz' 24;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--ink);
-      color: var(--paper);
-      padding: 16px 28px;
-      border-radius: 3px;
-      font-weight: 500;
-      font-size: 15px;
-      text-decoration: none;
-      transition: all 0.15s;
-      border: 1.5px solid var(--ink);
-    }
-
-    .btn-primary:hover {
-      background: var(--ink-soft);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(26, 24, 20, 0.15);
-    }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: transparent;
-      color: var(--ink);
-      padding: 14px 22px;
-      border-radius: 3px;
-      font-weight: 500;
-      font-size: 15px;
-      text-decoration: none;
-      border: 1.5px solid var(--line);
-      transition: all 0.15s;
-    }
-
-    .alt-download-link {
-      color: var(--brass);
-      text-decoration: underline;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
-    .alt-download-link:hover {
-      opacity: 0.8;
-    }
-
-    .btn-secondary:hover {
-      background: var(--paper-warm);
-      border-color: var(--ink-muted);
-    }
-
-    .hero-meta {
-      font-size: 12.5px;
-      color: var(--ink-muted);
-      font-family: var(--font-mono), sans-serif;
-    }
-
-    .hero-meta strong {
-      color: var(--accent-dark);
-      font-weight: 500;
-    }
-
-    /* Mockup card a destra */
-    .hero-mockup {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 0;
-      box-shadow: 0 25px 60px rgba(26, 24, 20, 0.12);
-      overflow: hidden;
-      transform: rotate(0.5deg);
-    }
-
-    .mockup-header {
-      background: var(--paper-warm);
-      border-bottom: 1px solid var(--line);
-      padding: 10px 14px;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .mockup-dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: var(--paper-darker);
-    }
-
-    .mockup-dot:nth-child(1) {
-      background: #d97757;
-    }
-
-    .mockup-dot:nth-child(2) {
-      background: #e8c14a;
-    }
-
-    .mockup-dot:nth-child(3) {
-      background: var(--accent);
-    }
-
-    .mockup-title {
-      margin-left: 12px;
-      font-family: var(--font-serif), sans-serif;
-      font-size: 12px;
-      color: var(--ink-muted);
-      font-style: italic;
-    }
-
-    .mockup-body {
-      padding: 22px 24px;
-    }
-
-    .mockup-key {
-      font-family: var(--font-mono), sans-serif;
-      font-size: 9px;
-      color: var(--ink-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 4px;
-    }
-
-    .mockup-h2 {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 22px;
-      letter-spacing: -0.015em;
-      color: var(--ink);
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-
-    .mockup-desc {
-      font-family: var(--font-serif), sans-serif;
-      font-style: italic;
-      font-size: 13px;
-      color: var(--ink-soft);
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
-
-    .mockup-meta {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .mockup-badge {
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 2px 7px;
-      border-radius: 2px;
-      background: #d9e0c8;
-      color: var(--accent-dark);
-      border: 1px solid #b0bc88;
-      font-weight: 500;
-    }
-
-    .mockup-block {
-      padding: 9px 12px;
-      border: 1px solid var(--line);
-      border-left: 3px solid var(--accent);
-      border-radius: 3px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--paper);
-    }
-
-    .mockup-block-name {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      color: var(--ink);
-    }
-
-    .mockup-block-pts {
-      font-family: var(--font-mono), sans-serif;
-      font-size: 9.5px;
-      color: var(--ink-muted);
-      background: var(--paper-warm);
-      padding: 1px 5px;
-      border-radius: 2px;
-    }
-
-    /* ================ SECTIONS ================ */
-    section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 80px 32px;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 56px;
-    }
-
-    .section-eyebrow {
-      font-family: var(--font-mono), sans-serif;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--brass);
-      margin-bottom: 14px;
-    }
-
-    .section-title {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 40px;
-      letter-spacing: -0.02em;
-      margin-bottom: 14px;
-      color: var(--ink);
-      font-variation-settings: 'opsz' 96;
-      line-height: 1.15;
-    }
-
-    .section-lead {
-      font-family: var(--font-serif), sans-serif;
-      font-style: italic;
-      font-size: 18px;
-      line-height: 1.55;
-      color: var(--ink-soft);
-      max-width: 60ch;
-      margin: 0 auto;
-    }
-
-    /* ================ HOW IT WORKS ================ */
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 18px;
-    }
-
-    .step {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-top: 3px solid var(--accent);
-      padding: 28px 22px;
-      border-radius: 4px;
-    }
-
-    .step-num {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 600;
-      font-size: 36px;
-      color: var(--brass);
-      line-height: 1;
-      margin-bottom: 14px;
-      font-variation-settings: 'opsz' 72;
-    }
-
-    .step h3 {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 17px;
-      margin-bottom: 8px;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-      line-height: 1.25;
-    }
-
-    .step p {
-      font-size: 13.5px;
-      line-height: 1.55;
-      color: var(--ink-soft);
-    }
-
-    /* ================ FEATURES ================ */
-    .features-bg {
-      background: var(--paper-warm);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      margin: 0;
-      padding: 0;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 36px;
-    }
-
-    .feature h3 {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-    }
-
-    .feature h3::before {
-      content: '';
-      display: inline-block;
-      width: 24px;
-      height: 3px;
-      background: var(--brass);
-      margin-right: 10px;
-      vertical-align: middle;
-    }
-
-    .feature p {
-      font-size: 14.5px;
-      line-height: 1.6;
-      color: var(--ink-soft);
-    }
-
-    /* ================ PERCHE' ESC ================ */
-    .why-esc {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .why-text h2 {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 36px;
-      letter-spacing: -0.02em;
-      margin-bottom: 20px;
-      color: var(--ink);
-      font-variation-settings: 'opsz' 96;
-      line-height: 1.15;
-    }
-
-    .why-text p {
-      font-size: 16px;
-      line-height: 1.7;
-      color: var(--ink-soft);
-      margin-bottom: 16px;
-    }
-
-    .why-text p strong {
-      color: var(--ink);
-      font-weight: 500;
-    }
-
-    .why-quote {
-      background: var(--paper);
-      border-left: 4px solid var(--brass);
-      padding: 24px 28px;
-      font-family: var(--font-serif), sans-serif;
-      font-style: italic;
-      font-size: 17px;
-      line-height: 1.55;
-      color: var(--ink-soft);
-      border-radius: 0 3px 3px 0;
-    }
-
-    .why-quote::before {
-      content: '"';
-      font-size: 56px;
-      font-weight: 600;
-      color: var(--brass);
-      line-height: 0.5;
-      vertical-align: -0.4em;
-      margin-right: 8px;
-    }
-
-    /* ================ FORM TESTER ================ */
-    .form-bg {
-      background: var(--ink);
-      color: var(--paper);
-      padding: 80px 0;
-      margin: 0;
-      border-top: 1px solid var(--ink);
-      background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(247, 243, 234, 0.025) 2px, rgba(247, 243, 234, 0.025) 3px);
-    }
-
-    .form-section {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 32px;
-      text-align: center;
-    }
-
-    .form-section h2 {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 36px;
-      letter-spacing: -0.02em;
-      margin-bottom: 14px;
-      color: var(--paper);
-      font-variation-settings: 'opsz' 96;
-      line-height: 1.15;
-    }
-
-    .form-section .form-lead {
-      font-family: var(--font-serif), sans-serif;
-      font-style: italic;
-      font-size: 17px;
-      color: var(--paper-warm);
-      margin-bottom: 36px;
-      opacity: 0.85;
-      line-height: 1.55;
-      max-width: 55ch;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* --- CLASSE PER I PULSANTI BLOCCATI --- */
-    .locked-btn {
-      opacity: 0.4;
-      pointer-events: none;
-      cursor: not-allowed;
-      filter: grayscale(100%);
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 14px;
-      text-align: left;
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .form-field.full {
-      grid-column: 1 / -1;
-    }
-
-    .form-field label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--paper-warm);
-      margin-bottom: 6px;
-      opacity: 0.75;
-      font-weight: 500;
-    }
-
-    .form-field input,
-    .form-field textarea {
-      padding: 11px 14px;
-      border: 1px solid rgba(247, 243, 234, 0.2);
-      background: rgba(247, 243, 234, 0.06);
-      color: var(--paper);
-      font-family: var(--font-sans), sans-serif;
-      font-size: 14px;
-      border-radius: 3px;
-      outline: none;
-      transition: all 0.15s;
-    }
-
-    .form-field input:focus,
-    .form-field textarea:focus {
-      border-color: var(--brass);
-      background: rgba(247, 243, 234, 0.1);
-    }
-
-    .form-field textarea {
-      resize: vertical;
-      min-height: 90px;
-      font-family: inherit;
-    }
-
-    .form-submit {
-      background: var(--brass);
-      color: var(--ink);
-      border: none;
-      padding: 14px 32px;
-      font-family: var(--font-sans), sans-serif;
-      font-weight: 500;
-      font-size: 15px;
-      border-radius: 3px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.15s;
-    }
-
-    .form-submit:not(:disabled):hover {
-      background: #c99a3f;
-      transform: translateY(-1px);
-    }
-
-    .form-note {
-      font-size: 12px;
-      color: var(--paper-warm);
-      opacity: 0.6;
-      margin-top: 18px;
-      font-style: italic;
-      font-family: var(--font-serif), sans-serif;
-    }
-
-    /* ================ FOOTER ================ */
-    footer {
-      background: var(--paper);
-      border-top: 1px solid var(--line);
-      padding: 40px 32px 30px;
-      text-align: center;
-    }
-
-    .footer-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .footer-brand {
-      font-family: var(--font-serif), sans-serif;
-      font-weight: 500;
-      font-size: 17px;
-      margin-bottom: 8px;
-      color: var(--ink);
-    }
-
-    .footer-meta {
-      font-size: 12.5px;
-      color: var(--ink-muted);
-      margin-bottom: 14px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-      font-size: 13px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      color: var(--ink-muted);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-
-    .footer-links a:hover {
-      color: var(--ink);
-    }
-
-    .footer-copy {
-      margin-top: 24px;
-      font-size: 11.5px;
-      color: var(--ink-muted);
-      font-family: var(--font-mono), sans-serif;
-    }
-
-    /* ================ RESPONSIVE ================ */
-    @media (max-width: 1100px) {
-      .steps {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 920px) {
-      .hero {
-        grid-template-columns: 1fr;
-        padding-top: 60px;
-        gap: 40px;
-      }
-
-      .hero-content h1 {
-        font-size: 40px;
-      }
-
-      .hero-mockup {
-        transform: rotate(0deg);
-        max-width: 480px;
-        margin: 0 auto;
-      }
-
-      .steps {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .features {
-        grid-template-columns: 1fr;
-        gap: 28px;
-      }
-
-      .why-esc {
-        grid-template-columns: 1fr;
-        gap: 36px;
-      }
-
-      section {
-        padding: 60px 24px;
-      }
-
-      .section-title,
-      .why-text h2,
-      .form-section h2 {
-        font-size: 30px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .nav-links {
-        gap: 16px;
-      }
-
-      .nav-links a:not(.nav-cta) {
-        display: none;
-      }
-
-      .steps {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .form-container-highlight {
-      background: rgba(255, 255, 255, 0.03);
-      border: 2px dashed var(--brass);
-      padding: 30px;
-      border-radius: 8px;
-      margin-top: 20px;
-      transition: all 0.3s ease;
-    }
-
-    @keyframes pulse-border {
-      0% {
-        box-shadow: 0 0 0 0 rgba(176, 137, 54, 0.4);
-      }
-
-      70% {
-        box-shadow: 0 0 0 10px rgba(176, 137, 54, 0);
-      }
-
-      100% {
-        box-shadow: 0 0 0 0 rgba(176, 137, 54, 0);
-      }
-    }
-
-    .input-required-highlight {
-      border-color: var(--brass) !important;
-      animation: pulse-border 2s infinite;
-    }
-
-    .os-btn:not(.locked-btn) {
-      background: var(--brass) !important;
-      color: var(--ink) !important;
-      border-color: var(--brass) !important;
-      transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .form-submit:not(.locked-btn) {
-      animation: bounce 0.5s ease-in-out;
-    }
-
-    @keyframes bounce {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-5px);
-      }
-    }
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description"
+        content="Prompt Book, app desktop gratuita di ESC per scrivere, organizzare e riutilizzare i prompt per Claude, ChatGPT, Gemini.">
+    <title>Prompt Book — ESC</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Open+Sans:wght@400;600&family=Spectral:ital,wght@1,400;1,500&display=swap">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-
-  <nav>
-    <div class="nav-inner">
-      <a href="#top" class="nav-brand">
-        <div class="nav-logo">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.000000 136.000000"
-            preserveAspectRatio="xMidYMid meet">
-            <g transform="translate(0.000000,136.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">
-              <path
-                d="M218 1308 c-9 -7 -55 -56 -102 -108 l-86 -94 0 -448 0 -448 85 0 85 0 0 -85 0 -85 448 0 448 0 97 107 97 107 -2 530 -3 531 -525 3 c-411 2 -530 -1 -542 -10z m207 -502 c41 -18 65 -52 72 -106 l6 -40 -112 0 c-61 0 -111 -4 -111 -9 0 -5 12 -23 26 -40 32 -39 87 -43 128 -10 25 20 29 20 43 6 22 -21 6 -41 -52 -63 -165 -63 -273 164 -122 256 38 24 75 25 122 6z m312 -10 c26 -23 27 -26 12 -41 -16 -16 -19 -16 -46 4 -24 18 -34 20 -56 12 -55 -21 -29 -57 56 -75 67 -15 90 -91 41 -137 -34 -32 -110 -34 -150 -4 -30 23 -33 35 -10 50 10 6 21 4 34 -9 14 -12 32 -16 59 -14 33 3 38 7 41 30 3 25 -1 28 -53 44 -64 18 -95 43 -95 77 0 75 107 115 167 63z m297 10 c44 -18 54 -35 31 -52 -16 -12 -21 -11 -37 3 -29 26 -88 20 -115 -12 -33 -37 -32 -107 2 -140 29 -30 89 -34 117 -8 17 16 20 16 36 -1 16 -16 16 -18 -8 -36 -38 -30 -84 -35 -136 -15 -58 22 -84 62 -84 130 0 111 93 173 194 131z" />
-              <path
-                d="M333 765 c-27 -11 -53 -41 -53 -59 0 -3 38 -6 85 -6 69 0 85 3 85 15 0 16 -35 55 -49 55 -5 0 -15 2 -23 5 -7 2 -27 -2 -45 -10z" />
-            </g>
-          </svg>
+    <header class="top">
+        <div class="wrap nav">
+            <a class="brand" href="#top" aria-label="Prompt Book, torna su">
+                <svg viewBox="0 0 136 136" aria-hidden="true">
+                    <g transform="translate(0,136) scale(0.1,-0.1)" fill="currentColor">
+                        <path
+                            d="M218 1308 c-9 -7 -55 -56 -102 -108 l-86 -94 0 -448 0 -448 85 0 85 0 0 -85 0 -85 448 0 448 0 97 107 97 107 -2 530 -3 531 -525 3 c-411 2 -530 -1 -542 -10z m207 -502 c41 -18 65 -52 72 -106 l6 -40 -112 0 c-61 0 -111 -4 -111 -9 0 -5 12 -23 26 -40 32 -39 87 -43 128 -10 25 20 29 20 43 6 22 -21 6 -41 -52 -63 -165 -63 -273 164 -122 256 38 24 75 25 122 6z m312 -10 c26 -23 27 -26 12 -41 -16 -16 -19 -16 -46 4 -24 18 -34 20 -56 12 -55 -21 -29 -57 56 -75 67 -15 90 -91 41 -137 -34 -32 -110 -34 -150 -4 -30 23 -33 35 -10 50 10 6 21 4 34 -9 14 -12 32 -16 59 -14 33 3 38 7 41 30 3 25 -1 28 -53 44 -64 18 -95 43 -95 77 0 75 107 115 167 63z m297 10 c44 -18 54 -35 31 -52 -16 -12 -21 -11 -37 3 -29 26 -88 20 -115 -12 -33 -37 -32 -107 2 -140 29 -30 89 -34 117 -8 17 16 20 16 36 -1 16 -16 16 -18 -8 -36 -38 -30 -84 -35 -136 -15 -58 22 -84 62 -84 130 0 111 93 173 194 131z" />
+                        <path
+                            d="M333 765 c-27 -11 -53 -41 -53 -59 0 -3 38 -6 85 -6 69 0 85 3 85 15 0 16 -35 55 -49 55 -5 0 -15 2 -23 5 -7 2 -27 -2 -45 -10z" />
+                    </g>
+                </svg>
+                <span class="brand-name">Prompt Book</span>
+                <span class="brand-by">by ESC</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#come-funziona">Come funziona</a>
+                <a href="#caratteristiche">Caratteristiche</a>
+                <a href="#punto-di-vista">Punto di vista</a>
+                <a href="https://escsrl.github.io/esc-safedoc-releases/" target="_blank" rel="noopener">SafeDoc</a>
+                <button class="theme-btn" id="theme-btn" type="button" aria-label="Cambia tema">◐</button>
+                <a href="#download" class="btn btn-primary">Scarica gratis</a>
+            </nav>
         </div>
-        <div class="nav-title">Prompt Book</div>
-      </a>
-      <ul class="nav-links">
-        <li><a href="#come-funziona">Come funziona</a></li>
-        <li><a href="#caratteristiche">Caratteristiche</a></li>
-        <li><a href="https://www.esconsulting.it/" target="_blank" rel="noopener">Perché ESC</a></li>
-        <li><a href="https://escsrl.github.io/esc-safedoc-releases/" target="_blank" rel="noopener">Un altro progetto ESC</a></li>
-        <li><a href="#download" class="nav-cta" id="nav-download-btn">Scarica gratis</a></li>
-      </ul>
-    </div>
-  </nav>
+    </header>
 
-  <div id="top"></div>
+    <main id="top">
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">Un prodotto ESC · gratuito</div>
+                    <h1>Il prompt che funziona, <em>scritto una volta.</em></h1>
+                    <p class="lead">Prompt Book è un'app desktop per comporre, salvare e riutilizzare i prompt che dai a
+                        Claude, ChatGPT, Gemini e ai modelli locali. Un metodo in sette blocchi, una libreria che cresce
+                        con l'uso, i dati sul tuo PC.</p>
+                    <div class="actions">
+                        <a href="#download" class="btn btn-primary" id="hero-dl">↓ Scarica Prompt Book</a>
+                        <a href="#come-funziona" class="btn btn-ghost">Come funziona</a>
+                    </div>
+                    <div class="meta">
+                        <span><b>Gratis</b></span><span><b>Locale</b></span><span><b>Nessun account</b></span><span
+                            id="pkg-size">~7 MB</span>
+                        <span id="os-windows">Windows</span><span id="os-macos">macOS</span><span
+                            id="os-linux">Linux</span>
+                    </div>
+                </div>
 
-  <header class="hero">
-    <div class="hero-content">
-      <h1>Scrivi prompt <em>migliori</em>, senza fatica.</h1>
-      <p class="hero-tagline">
-        Uno strumento desktop gratuito per organizzare, strutturare e
-        riutilizzare i prompt che dai a Claude, ChatGPT, Gemini e altri
-        assistenti AI. I tuoi dati restano sul tuo PC.
-      </p>
-      <div class="hero-actions" style="align-items: flex-start;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <a href="#download" class="btn-primary" id="main-download-btn">
-            ↓ Scarica
-          </a>
-          <a href="#download"
-            style="font-size: 12.5px; color: var(--ink-muted); text-decoration: none; padding-left: 2px;">
-            <span style="text-decoration: underline;">scarica per altri sistemi</span> ↓
-          </a>
-        </div>
-
-        <a href="#come-funziona" class="btn-secondary">
-          Scopri come funziona
-        </a>
-      </div>
-      <div class="hero-meta">
-        <strong>Gratis</strong> · <strong>Locale</strong> · <strong>No account</strong> · <strong id="pkg-size">~12
-          MB</strong> ·
-        <span id="os-windows">Windows</span> · <span id="os-macos">macOS</span> · <span id="os-linux">Linux</span>
-      </div>
-    </div>
-
-    <div class="hero-mockup">
-      <div class="mockup-header">
-        <div class="mockup-dot"></div>
-        <div class="mockup-dot"></div>
-        <div class="mockup-dot"></div>
-        <div class="mockup-title">prompt-book.app</div>
-      </div>
-      <div class="mockup-body">
-        <div class="mockup-key">email-scuse-cliente · v1</div>
-        <div class="mockup-h2">Email di scuse per ritardo</div>
-        <div class="mockup-desc">Per comunicare con tatto un ritardo a un cliente importante.</div>
-        <div class="mockup-meta">
-          <span class="mockup-badge">testato</span>
-        </div>
-        <div class="mockup-block"><span class="mockup-block-name">Contesto</span><span class="mockup-block-pts">15 pt
-            ✓</span></div>
-        <div class="mockup-block"><span class="mockup-block-name">Ruolo AI</span><span class="mockup-block-pts">20 pt
-            ✓</span></div>
-        <div class="mockup-block"><span class="mockup-block-name">Profilo utente</span><span class="mockup-block-pts">10
-            pt ✓</span></div>
-        <div class="mockup-block"><span class="mockup-block-name">Obiettivo</span><span class="mockup-block-pts">20 pt
-            ✓</span></div>
-        <div class="mockup-block"><span class="mockup-block-name">Vincoli</span><span class="mockup-block-pts">15 pt
-            ✓</span></div>
-        <div class="mockup-block"
-          style="border-left: 3px solid var(--brass); background: rgba(176, 137, 54, 0.06); margin-top: 8px;">
-          <span class="mockup-block-name" style="display: flex; align-items: center; gap: 5px;">
-            <span style="color: var(--brass);">💡</span> Affinamenti successivi
-            <span
-              style="font-size: 8.5px; background: var(--brass); color: var(--paper); padding: 1px 5px; border-radius: 2px; margin-left: 4px; letter-spacing: 0.05em;">NEW</span>
-          </span>
-          <span class="mockup-block-pts">10 pt ✓</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <section id="come-funziona">
-    <div class="section-header">
-      <div class="section-eyebrow">come funziona</div>
-      <h2 class="section-title">Cinque passi, zero fatica</h2>
-      <p class="section-lead">
-        Scrivere un buon prompt non è arte: è metodo. Prompt Book ti accompagna
-        attraverso un processo collaudato che migliora la qualità delle risposte
-        AI in modo immediato — e diventa più potente nel tempo.
-      </p>
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h3>Componi</h3>
-        <p>Compila i 7 blocchi metodologici: contesto, ruolo AI, obiettivo, vincoli, output atteso, profilo utente,
-          esempi.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h3>Copia</h3>
-        <p>Un click e il prompt è pronto, già nel formato ottimizzato per il tool AI che usi (Claude, ChatGPT, Gemini,
-          altri).</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h3>Usa</h3>
-        <p>Incolla nel tuo assistente AI preferito. Ottieni risposte più precise, più utili, già al primo tentativo.</p>
-      </div>
-      <div class="step" style="border-top-color: var(--brass);">
-        <div class="step-num" style="color: var(--brass);">4</div>
-        <h3>Affina <span
-            style="font-size: 9px; background: var(--brass); color: var(--paper); padding: 2px 6px; border-radius: 2px; vertical-align: middle; letter-spacing: 0.05em; font-weight: 500; margin-left: 4px;">NEW</span>
-        </h3>
-        <p>Quando dialogando con l'AI scopri istruzioni che vorresti dare al primo colpo, salvale come "Affinamenti
-          successivi" — il prompt impara dalla tua esperienza.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">5</div>
-        <h3>Riusa</h3>
-        <p>Salva, organizza con tag, marca i preferiti. Costruisci nel tempo la tua libreria personale di prompt che
-          funzionano.</p>
-      </div>
-    </div>
-  </section>
-
-  <div class="features-bg">
-    <section id="caratteristiche">
-      <div class="section-header">
-        <div class="section-eyebrow">caratteristiche</div>
-        <h2 class="section-title">Pensato per chi lavora con l'AI ogni giorno</h2>
-        <p class="section-lead">
-          Niente account, niente cloud, niente abbonamenti. Solo uno strumento
-          che fa una cosa e la fa bene.
-        </p>
-      </div>
-
-      <div class="features">
-        <div class="feature"
-          style="background: rgba(176, 137, 54, 0.04); border-left: 3px solid var(--brass); padding: 16px 18px 16px 22px; border-radius: 0 3px 3px 0; position: relative;">
-          <span
-            style="position: absolute; top: -8px; right: 12px; background: var(--brass); color: var(--paper); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 2px; text-transform: uppercase;">novità
-            v1.1</span>
-          <h3 style="color: var(--accent-dark);">Impara dalle tue iterazioni</h3>
-          <p>Quando dialogando con l'AI scopri che chiedi sempre le stesse precisazioni, salvale come "Affinamenti
-            successivi" del prompt. La prossima volta saranno già lì, e l'AI risponderà come vuoi al primo colpo. Il
-            prompt diventa memoria viva della tua esperienza.</p>
-        </div>
-        <div class="feature">
-          <h3>I tuoi dati restano tuoi</h3>
-          <p>Tutto è salvato in locale sul tuo PC in un database SQLite standard. Nessun server, nessuna telemetria,
-            nessun account. Esporta ogni cosa quando vuoi in formato JSON aperto.</p>
-        </div>
-        <div class="feature">
-          <h3>Ricerca full-text in italiano</h3>
-          <p>Trova qualsiasi prompt in millisecondi cercando per titolo, contenuto o tag. Ricerca ottimizzata per la
-            lingua italiana, gestisce accenti e prefissi automaticamente.</p>
-        </div>
-        <div class="feature">
-          <h3>Multi-tool nativo</h3>
-          <p>Lo stesso prompt viene compilato nel formato giusto per ogni assistente: tag XML per Claude, header
-            Markdown per ChatGPT e Gemini, testo piano per modelli locali Ollama.</p>
-        </div>
-        <div class="feature">
-          <h3>Indicatore di qualità</h3>
-          <p>Una barra colorata ti dice se il tuo prompt è completo secondo la metodologia. Non giudica il contenuto:
-            segnala se hai saltato passi importanti.</p>
-        </div>
-        <div class="feature">
-          <h3>Preferiti e organizzazione</h3>
-          <p>Marca con la stellina i prompt che usi più spesso. Filtra per stato (bozza, testato, produzione), per tag,
-            per parola chiave. Trova quello che ti serve in 3 secondi.</p>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <section id="perche-esc">
-    <div class="why-esc">
-      <div class="why-text">
-        <h2>Costruito da chi capisce l'AI per le PMI italiane</h2>
-        <p>
-          Prompt Book nasce dall'esperienza di <strong>ESC Enterprise Software
-            Consulting</strong>, software house specializzata in integrazione AI
-          per piccole e medie imprese italiane.
-        </p>
-        <p>
-          Lavorando ogni giorno con clienti che vogliono adottare l'AI in modo
-          serio e sostenibile, abbiamo imparato che il problema non è scegliere
-          il modello giusto: è <strong>imparare a parlare con l'AI in modo
-            strutturato</strong>. Prompt Book è lo strumento che usiamo internamente,
-          e che oggi rendiamo disponibile a chiunque.
-        </p>
-        <p>
-          Filosofia "no-SaaS", local-first, dati di proprietà dell'utente. Coerente
-          con l'approccio metodologico che applichiamo a tutti i nostri progetti.
-        </p>
-      </div>
-      <div>
-        <div class="why-quote">
-          Un prompt vale più del suo risultato. Una risposta AI serve una volta.
-          Un prompt ben fatto serve cento volte. Investi tempo nel raffinare il
-          prompt, non nel correggere ogni risposta.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="form-bg" id="download">
-    <section class="form-section">
-
-      <!-- Header -->
-      <div style="margin-bottom: 40px;">
-        <h2 style="font-size: 42px;">Ottieni Prompt Book</h2>
-        <p class="form-lead">
-          Inserisci il tuo nome per sbloccare il download. <br>
-          <strong>Il software è gratuito, locale e pronto all'uso.</strong>
-        </p>
-      </div>
-
-      <!-- Bonus Box -->
-      <div
-        style="background: rgba(176, 137, 54, 0.12); border: 1px solid rgba(176, 137, 54, 0.3); border-radius: 4px; padding: 18px; margin-bottom: 35px; display: flex; gap: 15px; align-items: center; text-align: left; max-width: 580px; margin-left: auto; margin-right: auto;">
-        <div style="font-size: 24px;">🎁</div>
-        <div style="font-size: 13.5px; color: var(--paper-warm); line-height: 1.4;">
-          <strong style="color: var(--paper); display: block; margin-bottom: 2px;">Bonus incluso nel pacchetto:</strong>
-          La guida <em>"Come dialogare con l'AI"</em> (PDF) si trova nella cartella <code>docs/</code> dopo
-          l'installazione e nella sezione "Aiuto" dell'applicazione.
-        </div>
-      </div>
-
-      <!-- FORM CONTAINER -->
-      <div class="form-container-highlight"
-        style="max-width: 650px; margin: 0 auto; background: rgba(255,255,255,0.02); border-style: solid; border-width: 1px; border-color: rgba(247, 243, 234, 0.1);">
-
-        <form id="testerForm" onsubmit="handleSubmit(event)">
-          <div class="form-grid">
-            <div class="form-field">
-              <label for="nome" style="color: var(--brass); font-weight: 600;">Il tuo Nome*</label>
-              <input type="text" id="nome" name="nome" required placeholder="Scrivi qui per sbloccare il download"
-                class="input-required-highlight">
+                <div class="panel" aria-label="Esempio di prompt in Prompt Book">
+                    <div class="panel-bar"><i></i><i></i><i></i><span>prompt-book · libreria</span></div>
+                    <div class="panel-body">
+                        <div class="pb-key">email-scuse-cliente · v3</div>
+                        <div class="pb-title">Email di scuse per ritardo consegna</div>
+                        <div class="pb-desc">Per comunicare con tatto un ritardo a un cliente importante.</div>
+                        <div class="pb-chips"><span class="chip on">★ preferito</span><span
+                                class="chip">produzione</span><span class="chip">#clienti</span><span
+                                class="chip">#email</span></div>
+                        <div class="pb-blocks">
+                            <div class="pb-block"><span>Contesto</span><span>15 pt ✓</span></div>
+                            <div class="pb-block"><span>Ruolo AI</span><span>20 pt ✓</span></div>
+                            <div class="pb-block"><span>Obiettivo</span><span>20 pt ✓</span></div>
+                            <div class="pb-block"><span>Vincoli</span><span>15 pt ✓</span></div>
+                            <div class="pb-block"><span>Output atteso</span><span>10 pt ✓</span></div>
+                            <div class="pb-block empty"><span>Esempi</span><span>0 / 10 pt</span></div>
+                            <div class="pb-block new"><span>Affinamenti successivi</span><span>10 pt ✓</span></div>
+                        </div>
+                        <div class="pb-score">
+                            <div class="pb-score-row"><span>Completezza metodo</span><b>90 / 100</b></div>
+                            <div class="pb-bar"><i></i></div>
+                        </div>
+                        <div class="pb-out">Copia per <span class="chip on">Claude · XML</span><span
+                                class="chip">ChatGPT · MD</span><span class="chip">Ollama · testo</span></div>
+                    </div>
+                </div>
             </div>
-            <div class="form-field">
-              <label for="email">Email (opzionale)</label>
-              <input type="email" id="email" name="email">
-            </div>
-            <div class="form-field full">
-              <label for="ruolo">Ruolo / Settore (opzionale)</label>
-              <input type="text" id="ruolo" name="ruolo" placeholder="Es. Consulente, Product Manager, Avvocato...">
-            </div>
-            <div class="form-field full">
-              <label for="assistente">Quali assistenti AI usi più spesso (opzionale)</label>
-              <input type="text" id="assistente" name="assistente"
-                placeholder="Es. Claude per scrittura, ChatGPT per coding, Gemini per ricerche...">
-            </div>
-          </div>
+        </section>
 
-          <!-- TASTONE UNICO INTELLIGENTE -->
-          <button type="submit" class="form-submit locked-btn" id="submit-btn" disabled
-            style="width: 100%; margin-top: 25px; padding: 18px; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-            <span id="btn-text">Sblocca il download</span> →
-          </button>
-        </form>
+        <section class="pain">
+            <div class="wrap">
+                <div class="pain-title">Se succede ogni giorno, non è più un'eccezione.</div>
+                <ul>
+                    <li>Riscrivere da zero lo stesso prompt ogni settimana</li>
+                    <li>Ripetere all'AI le stesse precisazioni a ogni chat</li>
+                    <li>Cercare tra le conversazioni il prompt che aveva funzionato</li>
+                    <li>Adattare a mano lo stesso testo per Claude, ChatGPT e Gemini</li>
+                    <li>Ricevere risposte generiche perché manca il contesto</li>
+                    <li>Tenere i prompt sparsi tra note, Word ed email</li>
+                </ul>
+            </div>
+        </section>
 
-        <!-- LINK ALTERNATIVI -->
-        <div id="alt-links-container"
-          style="margin-top: 20px; font-size: 12px; color: var(--paper-warm); opacity: 0.6;">
+        <section class="sec" id="come-funziona">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="eyebrow">Come funziona</div>
+                    <h2>Cinque passi. <em>Il metodo prima dello strumento.</em></h2>
+                    <p>Scrivere un buon prompt non è talento, è metodo. Prompt Book guida ogni richiesta attraverso gli
+                        stessi blocchi e conserva quello che impari strada facendo.</p>
+                </div>
+                <div class="steps five">
+                    <div class="step">
+                        <div class="step-n">01</div>
+                        <h3>Componi</h3>
+                        <p>Compili i sette blocchi: contesto, ruolo AI, obiettivo, vincoli, output atteso, profilo
+                            utente, esempi.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-n">02</div>
+                        <h3>Copia</h3>
+                        <p>Un clic e il prompt è nel formato giusto per l'assistente che usi: XML per Claude, Markdown
+                            per ChatGPT e Gemini.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-n">03</div>
+                        <h3>Usa</h3>
+                        <p>Lo incolli nell'assistente. La risposta è più precisa già al primo tentativo.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-n">04</div>
+                        <h3>Affina <span class="tag-new">NEW</span></h3>
+                        <p>Le precisazioni che chiedi sempre diventano “Affinamenti successivi”: la volta dopo sono già
+                            nel prompt.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-n">05</div>
+                        <h3>Riusa</h3>
+                        <p>Tag, stati e preferiti. Nel tempo costruisci la tua libreria di prompt che funzionano.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
+        <section class="sec" id="caratteristiche">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="eyebrow">Caratteristiche</div>
+                    <h2>Fa una cosa. <em>La fa bene.</em></h2>
+                    <p>Nessun account, nessun cloud, nessun abbonamento.</p>
+                </div>
+                <div class="feats">
+                    <div class="feat">
+                        <div class="k">memoria</div>
+                        <h3>Impara dalle tue iterazioni</h3>
+                        <p>Ogni correzione che fai in chat può diventare parte del prompt. Il prompt diventa la memoria
+                            della tua esperienza.</p>
+                    </div>
+                    <div class="feat">
+                        <div class="k">locale · SQLite</div>
+                        <h3>I tuoi dati restano tuoi</h3>
+                        <p>Tutto è salvato sul tuo PC in un database SQLite standard. Nessuna telemetria. Esporti tutto
+                            in JSON quando vuoi.</p>
+                    </div>
+                    <div class="feat">
+                        <div class="k">ricerca</div>
+                        <h3>Ricerca full-text in italiano</h3>
+                        <p>Trovi un prompt per titolo, contenuto o tag in millisecondi. Accenti e prefissi gestiti
+                            automaticamente.</p>
+                    </div>
+                    <div class="feat">
+                        <div class="k">multi-tool</div>
+                        <h3>Un prompt, ogni assistente</h3>
+                        <p>Tag XML per Claude, intestazioni Markdown per ChatGPT e Gemini, testo semplice per i modelli
+                            locali Ollama.</p>
+                    </div>
+                    <div class="feat">
+                        <div class="k">qualità</div>
+                        <h3>Indicatore di completezza</h3>
+                        <p>Una barra ti dice se hai saltato un passo del metodo. Non giudica il contenuto, segnala cosa
+                            manca.</p>
+                    </div>
+                    <div class="feat">
+                        <div class="k">organizzazione</div>
+                        <h3>Stati, tag e preferiti</h3>
+                        <p>Bozza, testato, produzione. Filtri per tag e parola chiave: il prompt che ti serve in tre
+                            secondi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sec" id="punto-di-vista">
+            <div class="wrap pov">
+                <div class="pov-text">
+                    <div class="eyebrow">Punto di vista</div>
+                    <h2>Il problema non è il modello. <em>È come gli parliamo.</em></h2>
+                    <p>Prompt Book nasce in <strong>ESC Enterprise Software Consulting</strong>, a Treviglio, dal lavoro
+                        quotidiano con aziende che vogliono usare l'AI in modo serio.</p>
+                    <p>Abbiamo visto che il risultato dipende meno dalla scelta del modello e più dalla struttura della
+                        richiesta. Questo è lo strumento che usiamo internamente. Oggi è disponibile per tutti.</p>
+                    <p>Local-first, senza abbonamento, dati di proprietà di chi li scrive. Lo stesso approccio che
+                        applichiamo ai progetti dei clienti.</p>
+                </div>
+                <blockquote class="quote">Una risposta dell'AI serve una volta. Un prompt ben fatto serve cento volte.
+                    Investi tempo nel prompt, non nel correggere ogni risposta.<small>ESC · dal 2003</small>
+                </blockquote>
+            </div>
+        </section>
+
+        <section class="sec get" id="download">
+            <div class="wrap get-grid">
+                <div class="sec-head" style="margin-bottom:0">
+                    <div class="eyebrow">Download</div>
+                    <h2>Ottieni Prompt Book.</h2>
+                    <p>Inserisci il tuo nome per sbloccare il download. Il software è gratuito, locale e pronto all'uso.
+                    </p>
+                    <div class="bonus"><strong>Incluso nel pacchetto</strong><span>La guida <em>“Come dialogare con
+                                l'AI”</em> in PDF, nella cartella <code>docs/</code> e nella sezione Aiuto
+                            dell'app.</span></div>
+                </div>
+
+                <form class="form" id="pb-form" novalidate>
+                    <div class="row2">
+                        <div class="field"><label for="nome">Nome <b>*</b></label><input id="nome" name="nome"
+                                type="text" required autocomplete="given-name" placeholder="Scrivi qui per sbloccare">
+                        </div>
+                        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email"
+                                autocomplete="email" placeholder="opzionale"></div>
+                    </div>
+                    <div class="field"><label for="ruolo">Ruolo / settore</label><input id="ruolo" name="ruolo"
+                            type="text" placeholder="Es. consulente, product manager, avvocato"></div>
+                    <div class="field"><label for="assistente">Assistenti AI che usi più spesso</label><input
+                            id="assistente" name="assistente" type="text"
+                            placeholder="Es. Claude per scrivere, ChatGPT per il codice"></div>
+                    <button type="submit" class="btn btn-primary" id="submit-btn" disabled>Sblocca il download
+                        →</button>
+                    <div id="dl-wrap" hidden>
+                        <p class="dl-ok" id="dl-msg">Grazie. Scegli la versione per il tuo sistema.</p>
+                        <div class="dl" id="dl-list" style="margin-top:10px"></div>
+                    </div>
+                    <p class="form-note">Niente spam. I dati servono solo a capire chi usa il progetto.</p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="foot">
+        <div class="wrap">
+            <div class="foot-grid">
+                <div>
+                    <h4>ESC Enterprise Software Consulting srl</h4><span>Via Torriani, 13 · 24047 Treviglio
+                        (BG)</span><span>Tel. +39 0363 302050</span><span>info@esconsulting.it</span><span>P.Iva
+                        IT03031480167</span>
+                </div>
+                <div>
+                    <h4>Strumenti AI di ESC</h4><a href="https://escsrl.github.io/esc-safedoc-releases/" target="_blank"
+                        rel="noopener">SafeDoc · anonimizza i documenti</a><a
+                        href="https://escsrl.github.io/prompt-book/" target="_blank" rel="noopener">PromptBook · i
+                        prompt che funzionano</a><span>TaskBook · in sviluppo</span>
+                </div>
+                <div>
+                    <h4>ESC</h4><a href="https://esconsulting.it/" target="_blank" rel="noopener">esconsulting.it</a><a
+                        href="https://www.ezdoc.it/" target="_blank" rel="noopener">EZDoc</a><a
+                        href="https://www.linkedin.com/company/esc-enterprise-software-consulting/" target="_blank"
+                        rel="noopener">LinkedIn</a><a href="https://github.com/escsrl" target="_blank"
+                        rel="noopener">GitHub</a>
+                </div>
+            </div>
+            <div class="foot-copy"><span>© 2026 ESC Enterprise Software Consulting srl · dal 2003</span><span>v1.2.1 ·
+                    Elaborazione locale</span></div>
         </div>
-      </div>
+    </footer>
 
-      <p class="form-note" style="margin-top: 30px; opacity: 0.4;">
-        Non riceverai spam. I tuoi dati servono solo a monitorare l'interesse per il progetto.
-      </p>
-    </section>
-  </div>
+    <script>
+        window.escDetectOS = function () {
+            var p = (navigator.platform || "").toLowerCase(), u = navigator.userAgent.toLowerCase();
+            if (p.indexOf("win") > -1 || u.indexOf("windows") > -1) return "windows";
+            if (p.indexOf("mac") > -1 || u.indexOf("macintosh") > -1) return "macos";
+            if (p.indexOf("linux") > -1 || u.indexOf("linux") > -1) return "linux";
+            return "fallback";
+        };
+        (function () {
+            var root = document.documentElement, btn = document.getElementById("theme-btn");
+            try { var s = localStorage.getItem("esc-theme"); if (s) root.setAttribute("data-theme", s); } catch (e) { }
+            btn.addEventListener("click", function () {
+                var cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+                var next = cur === "light" ? "dark" : "light";
+                root.setAttribute("data-theme", next);
+                try { localStorage.setItem("esc-theme", next); } catch (e) { }
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygfQO61DOBjJAf6ZWo9To8uAWn9VlAasW0_blMdisDUlmBBLeCXe4GveqLSgllv3tj/exec";
+            var LINKS = {
+                windows: { label: "Windows", file: ".exe · 64 bit", size: "~7 MB", url: "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book_1.2.1_x64-setup.exe" },
+                macos: { label: "macOS", file: ".dmg · universal", size: "~10 MB", url: "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book_1.2.1_universal.dmg" },
+                linux: { label: "Linux", file: ".deb · amd64", size: "~6 MB", url: "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book_1.2.1_amd64.deb" }
+            };
+            var os = window.escDetectOS();
+            if (LINKS[os]) {
+                document.getElementById("hero-dl").textContent = "↓ Scarica per " + LINKS[os].label;
+                document.getElementById("pkg-size").textContent = LINKS[os].size;
+                document.getElementById("os-" + os).classList.add("on");
+                document.getElementById("submit-btn").textContent = "Sblocca il download per " + LINKS[os].label + " →";
+            }
+            var form = document.getElementById("pb-form");
+            var nome = document.getElementById("nome");
+            var btn = document.getElementById("submit-btn");
+            nome.addEventListener("input", function () { btn.disabled = !nome.value.trim(); });
 
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">Prompt Book</div>
-      <div class="footer-meta">
-        Un prodotto di <strong>ESC Enterprise Software Consulting S.R.L.</strong> · Treviglio (BG)
-      </div>
-      <div class="footer-links">
-        <a href="https://www.esconsulting.it/" target="_blank" rel="noopener">Sito ESC</a>
-        <a href="#caratteristiche">Caratteristiche</a>
-        <a href="#download">Download</a>
-        <a href="mailto:info@esconsulting.it">Contatti</a>
-      </div>
-      <div class="footer-copy">
-        © 2026 ESC Enterprise Software Consulting S.R.L. · Tutti i diritti riservati · v1.2.0
-      </div>
-    </div>
-  </footer>
+            function renderLinks() {
+                var order = ["windows", "macos", "linux"].sort(function (a, b) { return (b === os) - (a === os); });
+                var list = document.getElementById("dl-list");
+                list.innerHTML = "";
+                order.forEach(function (k) {
+                    var a = document.createElement("a");
+                    a.href = LINKS[k].url; a.rel = "noopener"; a.target = "_blank";
+                    if (k === os) a.className = "primary";
+                    a.innerHTML = "↓ " + LINKS[k].label + " <span>" + LINKS[k].file + " · " + LINKS[k].size + "</span>";
+                    list.appendChild(a);
+                });
+                document.getElementById("dl-wrap").hidden = false;
+            }
 
-  <script>
-    // 1. CONFIGURAZIONE URL E LINK
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygfQO61DOBjJAf6ZWo9To8uAWn9VlAasW0_blMdisDUlmBBLeCXe4GveqLSgllv3tj/exec";
-
-    const DOWNLOAD_LINKS = {
-      windows: "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book_1.2.1_x64-setup.exe",
-      macos: "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book_1.2.1_universal.dmg",
-      linux: "https://github.com/escsrl/prompt-book/releases/download/v1.2.1/Prompt-Book_1.2.1_amd64.deb",
-      fallback: "#download"
-    };
-
-    // 2. FUNZIONE PER L'INVIO GENERICO DEI DATI (Riutilizzabile)
-    async function sendFormData() {
-      const form = document.getElementById('testerForm');
-      if (!form.reportValidity()) return false;
-
-      try {
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: new FormData(form),
-          mode: 'no-cors'
-        });
-        return true;
-      } catch (error) {
-        console.error('Errore invio:', error);
-        return false;
-      }
-    }
-
-    // 3. INVIO FORM PRINCIPALE (Download intelligente)
-    async function handleSubmit(e) {
-      e.preventDefault();
-
-      const submitButton = document.getElementById('submit-btn');
-      const originalText = submitButton.innerHTML;
-
-      submitButton.disabled = true;
-      submitButton.innerText = "Invio in corso...";
-
-      const isSuccess = await sendFormData();
-
-      if (isSuccess) {
-        alert("Grazie! I tuoi dati sono stati salvati. Il download partirà automaticamente.");
-        const os = detectOS();
-        window.location.href = DOWNLOAD_LINKS[os] || DOWNLOAD_LINKS.windows;
-
-        setTimeout(() => {
-          e.target.reset();
-          updateLockStatus();
-        }, 1000);
-      } else {
-        alert("Si è verificato un errore durante l'invio. Prova a scaricare dai link alternativi.");
-      }
-
-      submitButton.disabled = false;
-      submitButton.innerHTML = originalText;
-    }
-
-    // 4. DOWNLOAD FORZATO (Per i link alternativi Windows/Mac/Linux)
-    async function forceDownload(os) {
-      const nomeInput = document.getElementById('nome');
-
-      if (!nomeInput.value.trim()) {
-        alert("Inserisci il tuo nome per sbloccare i file.");
-        nomeInput.focus();
-        nomeInput.classList.add('input-required-highlight');
-        return;
-      }
-
-      const isSuccess = await sendFormData();
-      if (isSuccess) {
-        window.location.href = DOWNLOAD_LINKS[os];
-      } else {
-        alert("Errore nell'invio, ma il download partirà comunque.");
-        window.location.href = DOWNLOAD_LINKS[os];
-      }
-    }
-
-    // 5. RILEVAMENTO SISTEMA OPERATIVO
-    function detectOS() {
-      const platform = window.navigator.platform.toLowerCase();
-      const userAgent = window.navigator.userAgent.toLowerCase();
-
-      if (platform.includes("win") || userAgent.includes("windows")) return "windows";
-      if (platform.includes("mac") || userAgent.includes("macintosh")) return "macos";
-      if (platform.includes("linux")) return "linux";
-
-      return "fallback";
-    }
-
-    // 6. GESTIONE STATO BLOCCATO/EVIDENZA
-    function updateLockStatus() {
-      const nomeInput = document.getElementById('nome');
-      const submitBtn = document.getElementById('submit-btn');
-      const hasName = nomeInput.value.trim().length > 0;
-
-      if (hasName) {
-        submitBtn.classList.remove('locked-btn');
-        submitBtn.disabled = false;
-        nomeInput.classList.remove('input-required-highlight');
-      } else {
-        submitBtn.classList.add('locked-btn');
-        submitBtn.disabled = true;
-        nomeInput.classList.add('input-required-highlight');
-      }
-    }
-
-    // 7. SETUP PAGINA AL CARICAMENTO
-    function setupPage() {
-      const os = detectOS();
-      const submitBtn = document.getElementById('submit-btn');
-      const altContainer = document.getElementById('alt-links-container');
-      const pkgSize = document.getElementById('pkg-size');
-
-      const systems = {
-        windows: { label: "Windows", suffix: "per Windows" },
-        macos: { label: "macOS", suffix: "per macOS" },
-        linux: { label: "Linux", suffix: "per Linux" }
-      };
-
-      if (pkgSize) {
-        if (os === "windows") {
-          pkgSize.innerText = "~7 MB";
-        } else if (os === "macos") {
-          pkgSize.innerText = "~10 MB";
-        } else if (os === "linux") {
-          pkgSize.innerText = "~6 MB";
-        } else {
-          pkgSize.innerText = "~5 MB";
-        }
-      }
-
-      // 1. Personalizza il tastone principale
-      if (submitBtn) {
-        if (os !== "fallback" && systems[os]) {
-          submitBtn.innerHTML = `Sblocca il download ${systems[os].suffix} →`;
-        } else {
-          submitBtn.innerHTML = `Sblocca il download →`;
-        }
-      }
-
-      // 2. Genera i link alternativi ESCLUDENDO l'OS attuale
-      if (altContainer) {
-        let altHtml = "Scarica per altri sistemi: ";
-
-        const otherSystems = Object.keys(systems).filter(s => s !== os);
-
-        const links = otherSystems.map(s => {
-          return `<span onclick="forceDownload('${s}')" class="alt-download-link">${systems[s].label}</span>`;
-        });
-
-        altContainer.innerHTML = altHtml + links.join(" · ");
-      }
-
-      // 3. Navbar e Testi Hero (se presenti)
-      if (os !== "fallback") {
-        const mainBtn = document.getElementById("main-download-btn");
-        if (mainBtn) {
-          const osLabel = os === 'macos' ? 'macOS' : (os.charAt(0).toUpperCase() + os.slice(1));
-          mainBtn.innerHTML = `↓ Scarica per ${osLabel}`;
-        }
-
-        const activeOsSpan = document.getElementById(`os-${os}`);
-        if (activeOsSpan) {
-          activeOsSpan.style.color = "var(--accent-dark)";
-          activeOsSpan.style.fontWeight = "600";
-          activeOsSpan.style.textDecoration = "underline";
-        }
-      }
-
-      document.querySelectorAll('a[href="#download"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          setTimeout(() => {
-            const input = document.getElementById('nome');
-            input.focus();
-            input.classList.add('input-required-highlight');
-          }, 700);
-        });
-      });
-
-      const nomeInput = document.getElementById('nome');
-      if (nomeInput) {
-        nomeInput.addEventListener('input', updateLockStatus);
-        updateLockStatus();
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", setupPage);
-  </script>
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                if (!nome.value.trim()) { nome.focus(); return; }
+                btn.disabled = true; btn.textContent = "Invio in corso…";
+                var done = function () { btn.textContent = "Download sbloccato ✓"; renderLinks(); if (LINKS[os] && window.top === window.self) { try { window.location.href = LINKS[os].url; } catch (err) { } } };
+                fetch(SCRIPT_URL, { method: "POST", body: new FormData(form), mode: "no-cors" }).then(done, done);
+            });
+        })();
+    </script>
 
 </body>
 
