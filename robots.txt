@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://escsrl.github.io/prompt-book//sitemap.xml
+Sitemap: https://escsrl.github.io/prompt-book/sitemap.xml
